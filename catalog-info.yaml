@@ -1,0 +1,23 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: c360-cloud-run-migration
+  description: Automation toolkit for migrating services to Cloud Run
+  annotations:
+    github.com/project-slug: procter-gamble/c360-cloud-run-migration
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - python
+    - bash
+    - cloud-run
+    - migration
+    - devops
+  links:
+    - url: https://github.com/procter-gamble/c360-cloud-run-migration
+      title: GitHub Repository
+      icon: github
+spec:
+  type: library
+  lifecycle: production
+  owner: c360-platform-engineering-team
+  system: c360-cdp-platform
