@@ -1,37 +1,170 @@
 
-<div align="center">
+# c360-cloud-run-migration
 
-# 🎉 Congratulations SantosKM! 🎉
+> **Cloud Run Migration Toolkit**
 
-<img src="https://octodex.github.com/images/welcometocat.png" height="200px" />
+## 📋 Description
 
-### 🌟 You've successfully completed the exercise! 🌟
+Automation toolkit facilitating migration of legacy App Engine and Compute Engine services to Cloud Run serverless platform. Provides pre-flight checks, containerization templates, environment configuration mapping, migration planning, traffic shifts, automatic rollback, and reporting.
 
-## 🚀 Share Your Success!
+**Configuration Essentials:**
+- Language: Python + Bash scripts
+- Target: Google Cloud Run
+- Input: Service metadata
+- Output: Migration plan + automation scripts
+- Rollback: Automatic on errors
+- Downtime Target: Zero
 
-**Show off your new skills and inspire others!**
+## 🎯 Capabilities
+- Pre-migration validation
+- Dockerfile generation
+- Environment mapping
+- Configuration conversion
+- Traffic migration
+- Health check validation
+- Automatic rollback
+- Migration reporting
 
-<a href="https://twitter.com/intent/tweet?text=I%20just%20completed%20the%20%22Communicate%20using%20Markdown%22%20GitHub%20Skills%20hands-on%20exercise!%20%F0%9F%8E%89%0A%0Ahttps%3A%2F%2Fgithub.com%2FSantosKM%2Fskills-communicate-using-markdown%0A%0A%23GitHubSkills%20%23OpenSource%20%23GitHubLearn%0A" target="_blank" rel="noopener noreferrer">
-  <img src="https://img.shields.io/badge/Share%20on%20X-1da1f2?style=for-the-badge&logo=x&logoColor=white" alt="Share on X" />
-</a>
-<a href="https://bsky.app/intent/compose?text=I%20just%20completed%20the%20%22Communicate%20using%20Markdown%22%20GitHub%20Skills%20hands-on%20exercise!%20%F0%9F%8E%89%0A%0Ahttps%3A%2F%2Fgithub.com%2FSantosKM%2Fskills-communicate-using-markdown%0A%0A%23GitHubSkills%20%23OpenSource%20%23GitHubLearn%0A" target="_blank" rel="noopener noreferrer">
-  <img src="https://img.shields.io/badge/Share%20on%20Bluesky-0085ff?style=for-the-badge&logo=bluesky&logoColor=white" alt="Share on Bluesky" />
-</a>
-<a href="https://www.linkedin.com/feed/?shareActive=true&text=I%20just%20completed%20the%20%22Communicate%20using%20Markdown%22%20GitHub%20Skills%20hands-on%20exercise!%20%F0%9F%8E%89%0A%0Ahttps%3A%2F%2Fgithub.com%2FSantosKM%2Fskills-communicate-using-markdown%0A%0A%23GitHubSkills%20%23OpenSource%20%23GitHubLearn%0A" target="_blank" rel="noopener noreferrer">
-  <img src="https://img.shields.io/badge/Share%20on%20LinkedIn-0077b5?style=for-the-badge&logo=linkedin&logoColor=white" alt="Share on LinkedIn" />
-</a>
+## 🏗️ Architecture
+```
+Legacy App Engine/GCE
+Service
+        │
+        │ Migration analysis
+        ▼
+c360-cloud-run-migration
+├─ Validate compatibility
+├─ Generate Dockerfile
+├─ Map environments
+├─ Create Cloud Run service
+└─ Migrate traffic
+        │
+        ├─ Gradual traffic shift
+        ├─ Health monitoring
+        └─ Automatic rollback (if needed)
+        │
+        ▼
+Cloud Run Service
+(production)
+```
 
-### 🎯 What's Next?
-**Keep the momentum going!**
+## 🔄 Business Flow
+### How Migration Works
+**Purpose**: Safely move services to serverless platform.
 
-[![](https://img.shields.io/badge/Return%20to%20Exercise-%E2%86%92-1f883d?style=for-the-badge&logo=github&labelColor=197935)](https://github.com/SantosKM/skills-communicate-using-markdown/issues/1)
-[![GitHub Skills](https://img.shields.io/badge/Explore%20GitHub%20Skills-000000?style=for-the-badge&logo=github&logoColor=white)](https://skills.github.com)
+**Migration Workflow:**
+1. **Pre-Flight Checks**
+    ```bash
+    ✓ Service accessible
+    ✓ Dependencies available
+    ✓ Memory requirements OK
+    ✓ Timeout requirements OK
+    ```
+2. **Generate Dockerfile**
+    ```dockerfile
+    FROM gcr.io/gke-release/ubuntu:20.04
+    COPY app/ /app/
+    EXPOSE 8080
+    CMD ["python", "-m", "app.main"]
+    ```
+3. **Map Environment**
+    ```
+    App Engine  →  Cloud Run
+    ENV vars    →  Secret Manager
+    Services    →  Private services
+    DB  →  Cloud SQL proxy
+    ```
+4. **Create Cloud Run**
+    ```bash
+    gcloud run deploy service \
+      --image gcr.io/project/service:v1 \
+      --memory 512Mi \
+      --timeout 3600s
+    ```
+5. **Migrate Traffic**
+    - 10% traffic → Cloud Run
+    - Monitor metrics
+    - Increment 10% every 5 minutes
+    - Rollback on error
 
-*There's no better way to learn than building things!* 🚀
+**Migration Timeline:**
+```
+Hour 0:00 - Pre-flight checks
+Hour 0:05 - Generate Docker image (10 min)
+Hour 0:15 - Build & push (5 min)
+Hour 0:20 - Deploy to Cloud Run
+Hour 0:25 - Route 10% traffic
+Hour 0:30 - Route 20% traffic
+Hour 1:00 - Route 100% traffic
+Hour 1:05 - Delete old service
 
-</div>
+Total: 65 minutes, zero downtime
+```
+
+**Key Features:**
+- ✓ Zero downtime
+- ✓ Automatic rollback
+- ✓ Gradual traffic shift
+- ✓ Pre-flight validation
+
+### Error Handling
+Clear, actionable error handling keeps migrations safe and supportable. The table below lists common error conditions and recommended operational steps.
+
+| Error Code / Type | Description | Action / Outcome |
+|---|---|---|
+| DEPLOYMENT_FAIL | Failure during Cloud Run deployment. | Retry the deployment, surface logs for diagnostics, and rollback if necessary; notify operators and include deployment logs. |
+| IAM_MISSING | Required IAM role missing. | Fail fast with clear instructions to grant the required role; log the failure and notify owners. |
+| CONFIG_PARSE_ERROR | Invalid migration configuration. | Abort migration and report error to operator with config line/offset and example values for correction. |
+| IMAGE_PULL_ERROR | Unable to pull base image. | Verify registry authentication, retry the pull, and alert on persistent failures to registry owners. |
+| UNKNOWN_ERROR | Any unexpected exception. | Capture logs and diagnostic outputs; surface to operators for manual troubleshooting and post-mortem. |
+
+## 📦 Dependencies
+**Upstream:**
+- Legacy service
+
+**Downstream:**
+- Cloud Run
+- Cloud SQL
+- Secret Manager
+
+**Libraries:**
+- `google-cloud-run`
+- `docker`
+
+## 🛠️ Configuration
+```bash
+MIGRATION_CONFIG = {
+    'traffic_step': 10,  # 10% increments
+    'step_duration_minutes': 5,
+    'max_memory_mb': 512,
+    'max_timeout_seconds': 3600
+}
+```
+
+## 🚀 Deployment
+```bash
+./migrate.sh --service myservice --target cloud-run
+```
+
+## 📈 Monitoring
+### Key Metrics
+- `migration_progress_percent` - % traffic moved
+- `error_rate_comparison` - Old vs new
+- `latency_comparison_ms` - Performance
+- `cost_savings_percent` - Cloud Run vs old
+
+### Alerts
+- **High Error Rate**: >2x baseline
+- **High Latency**: >50% increase
+- **Health Check Failures**: >10%
+
+## 📚 Resources
+- **GitHub**: `https://github.com/procter-gamble/c360-cloud-run-migration`
+- **Slack**: `#c360-platform-engineering`
 
 ---
 
-&copy; 2025 GitHub &bull; [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) &bull; [MIT License](https://gh.io/mit)
+**Version**: 2.0.0  
+**Last Updated**: 2024-12-16  
+**Maintainer**: C360 Platform Engineering Team
 
